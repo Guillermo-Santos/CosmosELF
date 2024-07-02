@@ -83,7 +83,7 @@ namespace CosmosELFCore
                 }
                 else
                 {
-                    //read the data from the orginal file
+                    //read the data from the original file
                     var reader = new BinaryReader(_stream);
                     reader.BaseStream.Posistion = header.Offset;
 
@@ -125,7 +125,7 @@ namespace CosmosELFCore
                         //nop
                         break;
                     default:
-                        Console.WriteLine($"Error RelocationType({(int) rel.Type}) not implmented");
+                        Console.WriteLine($"Error RelocationType({(int)rel.Type}) not implemented");
                         break;
                 }
             }
