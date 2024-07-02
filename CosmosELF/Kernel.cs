@@ -9,29 +9,15 @@ namespace CosmosELF
 {
     public unsafe class Kernel : Sys.Kernel
     {
-        private byte[] UnmanagedString(string s)
-        {
-            var re = new byte[s.Length + 1];
-
-            for (int i = 0; i < s.Length; i++)
-            {
-                re[i] = (byte)s[i];
-            }
-
-            re[s.Length + 1] = 0; //c requires null terminated string
-            return re;
-        }
-
         protected override void BeforeRun()
         {
             fixed (byte* ptr = TestFile.test_so)
             {
-                var exe = new UnmanagedExecutible(ptr);
+                var exe = new UnmanagedExecutable(ptr);
                 exe.Load();
                 exe.Link();
 
                 Console.WriteLine("Executing");
-
                 new ArgumentWriter();
                 exe.Invoke("tty_clear");
 
@@ -40,14 +26,14 @@ namespace CosmosELF
                     .Push(15); //bg
                 exe.Invoke("tty_set_color");
 
-                fixed (byte* str = UnmanagedString("Hello World"))
+                fixed (byte* str = Encoding.ASCII.GetBytes("Hello World"))
                 {
                      new ArgumentWriter()
                          .Push((uint)str);
                     exe.Invoke("tty_puts");
                 }
 
-               
+
             }
         }
 
