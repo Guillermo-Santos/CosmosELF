@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Cosmos.Core.Memory.Old;
+using Cosmos.Core.Memory;
+using IL2CPU.API;
 using IL2CPU.API.Attribs;
+using XSharp;
 using XSharp.Assembler;
 
 namespace CosmosELFCore
@@ -11,7 +13,7 @@ namespace CosmosELFCore
     {
         public static uint Offset;
         public static uint eax, ebx, ecx, edx, esi, edi, esp, ebp;
-        public static uint* Stack = (uint*)Heap.MemAlloc(1024);
+        public static uint* Stack = (uint*)Heap.Alloc(1024);
 
         public static void Dump()
         {
@@ -26,14 +28,14 @@ namespace CosmosELFCore
         [PlugMethod(Assembler = typeof(PlugStoreState))]
         public static void StoreState()
         {
-            eax = 0;
-            ebx = 0;
-            ecx = 0;
-            edx = 0;
-            esi = 0;
-            edi = 0;
-            esp = 0;
-            ebp = 0;
+            eax = 0u;
+            ebx = 0u;
+            ecx = 0u;
+            edx = 0u;
+            esi = 0u;
+            edi = 0u;
+            esp = 0u;
+            ebp = 0u;
         }
 
         [PlugMethod(Assembler = typeof(PlugLoadState))]
@@ -52,11 +54,11 @@ namespace CosmosELFCore
     {
         public override void AssembleNew(Assembler aAssembler, object aMethodInfo)
         {
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_eax], eax");
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_ebx], ebx");
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_ecx], ecx");
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_edx], edx");
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_edi], edi");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.eax))}], eax");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ebx))}], ebx");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ecx))}], ecx");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.edx))}], edx");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.edi))}], edi");
         }
     }
 
@@ -66,11 +68,11 @@ namespace CosmosELFCore
     {
         public override void AssembleNew(Assembler aAssembler, object aMethodInfo)
         {
-            new LiteralAssemblerCode("mov eax, [static_field__CosmosELFCore_Invoker_eax]");
-            new LiteralAssemblerCode("mov ebx, [static_field__CosmosELFCore_Invoker_ebx]");
-            new LiteralAssemblerCode("mov ecx, [static_field__CosmosELFCore_Invoker_ecx]");
-            new LiteralAssemblerCode("mov edx, [static_field__CosmosELFCore_Invoker_edx]");
-            new LiteralAssemblerCode("mov edi, [static_field__CosmosELFCore_Invoker_edi]");
+            XS.LiteralCode($"mov eax, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.eax))}]");
+            XS.LiteralCode($"mov ebx, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ebx))}]");
+            XS.LiteralCode($"mov ecx, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ecx))}]");
+            XS.LiteralCode($"mov edx, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.edx))}]");
+            XS.LiteralCode($"mov edi, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.edi))}]");
         }
     }
 
@@ -80,21 +82,21 @@ namespace CosmosELFCore
     {
         public override void AssembleNew(Assembler aAssembler, object aMethodInfo)
         {
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_esp], esp");
-            new LiteralAssemblerCode("mov [static_field__CosmosELFCore_Invoker_ebp], ebp");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.esp))}], esp");
+            XS.LiteralCode($"mov [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ebp))}], ebp");
 
-            new LiteralAssemblerCode("mov eax, [static_field__CosmosELFCore_Invoker_Stack]");
-            new LiteralAssemblerCode("add eax, 50");
-            new LiteralAssemblerCode("mov esp, eax");
-            new LiteralAssemblerCode("mov ebp, eax");
-            new LiteralAssemblerCode("mov eax, [static_field__CosmosELFCore_Invoker_Offset]");
-            new LiteralAssemblerCode("Call eax");
+            XS.LiteralCode($"mov eax, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.Stack))}]");
+            XS.LiteralCode("add eax, 50");
+            XS.LiteralCode("mov esp, eax");
+            XS.LiteralCode("mov ebp, eax");
+            XS.LiteralCode($"mov eax, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.Offset))}]");
+            XS.LiteralCode("Call eax");
 
-            new LiteralAssemblerCode("mov ecx, [static_field__CosmosELFCore_Invoker_Stack]");
-            new LiteralAssemblerCode("mov dword [ecx], eax");
+            XS.LiteralCode($"mov ecx, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.Stack))}]");
+            XS.LiteralCode("mov dword [ecx], eax");
 
-            new LiteralAssemblerCode("mov esp, [static_field__CosmosELFCore_Invoker_esp]");
-            new LiteralAssemblerCode("mov ebp, [static_field__CosmosELFCore_Invoker_ebp]");
+            XS.LiteralCode($"mov esp, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.esp))}]");
+            XS.LiteralCode($"mov ebp, [{LabelName.GetStaticFieldName(typeof(Invoker), nameof(Invoker.ebp))}]");
         }
     }
 }

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Cosmos.Core.Memory.Old;
+using Cosmos.Core.Memory;
 
 namespace CosmosELFCore
 {
-    public unsafe class UnmanagedExecutible
+    public unsafe class UnmanagedExecutable
     {
         private MemoryStream _stream;
         private ElfFile _elf;
         private byte* _finalExecutible;
 
-        public UnmanagedExecutible(byte* elfbin)
+        public UnmanagedExecutable(byte* elfbin)
         {
             _stream = new MemoryStream(elfbin);
         }
@@ -22,12 +22,12 @@ namespace CosmosELFCore
 
 
             /*
-             * 1. determin the total size of the final loaded sections
-             * 2. maloc some space for them and allocate them
+             * 1. determine the total size of the final loaded sections
+             * 2. malloc some space for them and allocate them
              * 3. update headers location information
              */
 
-            //calcualte bss secstion size
+            //calculate bss section size
             for (var i = 0; i < _elf.SectionHeaders.Count; i++)
             {
                 var header = _elf.SectionHeaders[i];
@@ -51,7 +51,7 @@ namespace CosmosELFCore
                 }
             }
 
-            //calcualte final size
+            //calculate final size
             uint totalSize = 0;
             foreach (var header in _elf.SectionHeaders)
             {
@@ -61,8 +61,8 @@ namespace CosmosELFCore
                 }
             }
 
-            //alocate final size
-            _finalExecutible = (byte*) Heap.MemAlloc(totalSize);
+            //allocate final size
+            _finalExecutible = Heap.Alloc(totalSize);
 
             var stream = new MemoryStream(_finalExecutible);
             var writer = new BinaryWriter(stream);
@@ -90,7 +90,7 @@ namespace CosmosELFCore
                     //update the meta data
                     header.Offset = writer.BaseStream.Posistion;
 
-                    //write the data from the old file into the loaded executible
+                    //write the data from the old file into the loaded executable
                     for (int i = 0; i < header.Size; i++)
                     {
                         writer.Write(reader.ReadByte());
